@@ -15,4 +15,7 @@ License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    lavaan
+    lavaan,
+    regsem
+URL: https://github.com/rrrrrrrlll/gfactharm
+BugReports: https://github.com/rrrrrrrlll/gfactharm/issues
