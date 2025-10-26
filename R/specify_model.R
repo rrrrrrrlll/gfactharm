@@ -1,7 +1,7 @@
 #' Define a Harmonization Model Specification
 #'
-#' This function creates a 'harm_model' object that stores the
-#' model syntax, data, and settings for use in later functions.
+#' This function creates a 'harm_model' object that stores the model structure,
+#' data, and settings for use in later functions.
 #'
 #' @param cohorts A vector of names of all cohorts.
 #' @param cohort_domain_test_map A map showing which tests belongs to each cohort's
@@ -56,7 +56,7 @@ specify_model <- function(cohorts,
         domain_test_map = domain_test_map,
         cohort_domain_test_map = cohort_domain_test_map,
         data = data,
-        settings = list(estimator = "MLR")
+        estimator = "MLR"
     )
 
     ## assign class name

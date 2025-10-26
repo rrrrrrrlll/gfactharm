@@ -19,7 +19,6 @@
 #'  `fix_means = TRUE`. Default is `0.0`.
 #' @param fixed_variance The numeric value to fix item residual variances
 #'  to when `fix_lv_variances = TRUE`. Default is `1.0`.
-#'
 #' @param group_reg A character vector of item names.
 #'  If non-empty, items in it will add a regression to the group variable.
 #'  If `NULL` (default), skip this part.

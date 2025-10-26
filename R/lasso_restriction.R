@@ -28,7 +28,7 @@ lasso_restriction <- function(model, target_items, target_cohorts) {
 
     # 1. Construct the full model syntax
     mimic_syntax <- get_lavaan_syntax(model,
-                                      selected_items,
+                                      target_items,
                                       loadings         = NULL,
                                       fix_lv_means     = FALSE,
                                       fix_lv_variances = TRUE,
@@ -45,8 +45,8 @@ lasso_restriction <- function(model, target_items, target_cohorts) {
 
     # 2. Run regularized SEM (LASSO)
     cat("Running regularized SEM with LASSO penalty. This may take a moment...\n")
-    initial_fit <- sem(mimic_syntax, dat_tmp, check.post = FALSE)
-    cv_fit <- regsem(
+    initial_fit <- lavaan::sem(mimic_syntax, dat_tmp, check.post = FALSE)
+    cv_fit <- regsem::regsem(
         model = initial_fit,
         type = "lasso", # Specify the LASSO penalty
         pars_pen = dif_labels,
@@ -54,7 +54,7 @@ lasso_restriction <- function(model, target_items, target_cohorts) {
     )
     cat("Analysis complete.\n\n")
 
-    # 4. Interpret the results
+    # 3. Interpret the results
     # We look at the summary, focusing on the estimates for the penalized parameters.
     # Parameters shrunk to zero are considered DIF-free (anchors).
     # Parameters with non-zero estimates are flagged as having DIF.
@@ -111,5 +111,5 @@ lasso_restriction <- function(model, target_items, target_cohorts) {
 
     print(p)
 
-    return(dif_results[, c("lhs", "est", "abs_est", "Classification")])
+    return(results = dif_results[, c("lhs", "est", "abs_est", "Classification")])
 }

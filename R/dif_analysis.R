@@ -15,9 +15,9 @@ dif_analysis <- function(model, target_items, target_cohorts){
 
     lasso_result <- lasso_restriction(model, target_items, target_cohorts)
 
-    message("Estimation of regression coefficent and classification of DIF.")
+    message("Estimation of regression coefficent and classification of DIF:")
     print(prelim_results)
-    message("Be aware that LASSO restriction method may not be accurate when no DIF presents.")
+    message("Be aware that LASSO restriction test may be inaccurate when no DIF presents.")
     message("Run MIMIC test?")
 
     # --- Ask user for decision ---
@@ -29,8 +29,26 @@ dif_analysis <- function(model, target_items, target_cohorts){
     # --- Check decision ---
     if (user_answer == "y" || user_answer == "yes") {
 
+        # --- Find the anchor for each domain ---
+        domain_df <- tibble::enframe(model$domain_test_map, name="domain", value="lhs") %>%
+            tidyr::unnest(cols = c(lhs))
+
+
+        min_tests_by_domain <- prelim_results %>%
+            # adds a 'domain' column to each test
+            left_join(domain_df, by = "lhs") %>%
+            # group the data by domain
+            group_by(domain) %>%
+            # select the row with the minimum 'abs_est' within each group
+            slice_min(order_by = abs_est, n = 1, with_ties = FALSE) %>%
+            ungroup()
+
+        anchors = min_tests_by_domain$lhs
+        message('The anchor tests are chosen to be:')
+        print(anchors)
+
         # --- Run MIMIC ---
-        mimic_result <- "later :)"
+        mimic_result <- mimic(model, target_items, target_cohorts, anchors)
 
     } else {
         # --- End the function ---
