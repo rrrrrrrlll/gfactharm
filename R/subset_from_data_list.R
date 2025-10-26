@@ -26,8 +26,7 @@ subset_from_data_list <- function(model, target_items, target_groups) {
     if (length(missing_groups) > 0) {
         stop(paste0(
             "The following group(s) were not found as `model$cohorts`: ",
-            paste(missing_groups, collapse = ", "),
-            ". Available groups are: ", paste(available_groups, collapse = ", ")
+            paste(missing_groups, collapse = ", ")
         ))
     }
 
@@ -39,7 +38,7 @@ subset_from_data_list <- function(model, target_items, target_groups) {
 
         # --- New Strict Validation ---
         # Check if all required items are present in this group's dataframe
-        missing_items_in_group <- setdiff(target_items, c_t_map$group_name)
+        missing_items_in_group <- setdiff(target_items, c_t_map[[group_name]])
 
         if (length(missing_items_in_group) > 0) {
             # Store error message instead of stopping immediately
@@ -82,7 +81,7 @@ subset_from_data_list <- function(model, target_items, target_groups) {
     final_data <- do.call(rbind, processed_list)
 
     # Re-order columns to be tidy: group_col first, then items
-    final_data <- final_data[, c(group_col, items)]
+    final_data <- final_data[, c(group_col, target_items)]
 
     # Clean up row names
     rownames(final_data) <- NULL
@@ -93,7 +92,7 @@ subset_from_data_list <- function(model, target_items, target_groups) {
     cat(paste0(
         "Successfully built dataframe with ", nrow(final_data),
         " observations for ", length(target_groups), " group(s) and ",
-        length(items), " item(s).\n"
+        length(target_items), " item(s).\n"
     ))
 
     return(final_data)

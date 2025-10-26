@@ -16,25 +16,26 @@
 
 mimic <- function(model, target_items, target_cohorts, anchors) {
 
-    cat("--- Running MIMIC Test ---\n")
+    cat("\n--- Running MIMIC Test ---\n")
 
     # 0. extract info from harm_model
     cohorts <- model$cohorts
     d_t_map <- model$domain_test_map
     c_t_map <- model$cohort_test_map
-    data_tmp <- subset_from_data_list(model = model,
+    group_var <- model$group_var
+    dat_tmp <- subset_from_data_list(model = model,
                                       target_items = target_items,
                                       target_groups = target_cohorts)
 
 
     # 1. Construct the full model syntax
-    mimic_syntax <- get_lavaan_syntax(model,
-                                      target_items,
-                                      loadings         = NULL,
-                                      fix_lv_means     = TRUE,
-                                      fix_lv_variances = TRUE,
-                                      group_reg        = setdiff(target_items, anchors)
-                                      )
+    mimic_syntax <- lvn_syntax(model,
+                               target_items,
+                               loadings         = NULL,
+                               fix_lv_means     = TRUE,
+                               fix_lv_variances = TRUE,
+                               group_reg        = setdiff(target_items, anchors)
+                    )
 
     # Print the model being fitted for user transparency
     cat("--- Fitting the following MIMIC model ---\n")
@@ -43,26 +44,21 @@ mimic <- function(model, target_items, target_cohorts, anchors) {
 
 
     # 2. Fit the MIMIC model
-    fit <- tryCatch({
-        lavaan::sem(mimic_syntax, data = dat_tmp, estimator = model$estimator)
-    }, error = function(e) {
-        message("An error occurred during model fitting in lavaan:")
-        stop(e)
-    })
-
+    fit <- lavaan::sem(mimic_syntax, data = dat_tmp)
 
     # 3. Collect fit indices and p-value
 
     # fitness indices
-    indices <- summary(fit, fit.measures=TRUE)$fit[c("cfi","srmr","rmsea")]
+    indices <- lavaan::summary(fit, fit.measures=TRUE)$fit[c("cfi","srmr","rmsea")]
 
     # parameter estimations of targeted items
-    pe <- parameterEstimates(fit)
-    dif_results <- pe[pe$op == "~" & pe$lhs %in% target_item & pe$rhs == group_var,
+    pe <- lavaan::parameterEstimates(fit)
+    dif_results <- pe[pe$op == "~" & pe$lhs %in% target_items & pe$rhs == group_var,
                       c("lhs", "est", "se", "z", "pvalue")]
     colnames(dif_results) <- c("item", "estimate", "std_error", "z_value", "p_value")
 
-    cat("\n--- Fitting criterions ---\n\n")
+    cat("--- LASSO DIF Detection Results ---\n")
+    cat("--- Fitting criterions ---\n\n")
     print(indices)
     cat('\n--- Parameter Estimations --- \n\n')
     print(dif_results)

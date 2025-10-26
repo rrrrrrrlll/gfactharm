@@ -1,4 +1,4 @@
-#' Generate lavaan Model Syntax
+#' Generate `lavaan` Syntax of First Order Linear Model
 #'
 #' Given full model information, generate model syntax of a 1st order linear model
 #' include only selected items.
@@ -26,14 +26,14 @@
 #' @return A character string of the formatted lavaan model syntax.
 
 
-get_lavaan_syntax <- function(model,
-                              selected_items,
-                              loadings         = NULL,
-                              fix_lv_means     = FALSE,
-                              fix_lv_variances = FALSE,
-                              fixed_intercept  = 0.0,
-                              fixed_variance   = 1.0,
-                              group_reg        = NULL) {
+lvn_syntax <- function(model,
+                       selected_items,
+                       loadings         = NULL,
+                       fix_lv_means     = FALSE,
+                       fix_lv_variances = FALSE,
+                       fixed_intercept  = 0.0,
+                       fixed_variance   = 1.0,
+                       group_reg        = NULL) {
 
     # Extract information from `model`
     domains = model$domains
@@ -74,7 +74,7 @@ get_lavaan_syntax <- function(model,
             }
 
             # Combine all item strings to be the right-hand-side of a line
-            rhs <- paste(indicator_strings, sep = " + ")
+            rhs <- paste(indicator_strings, collapse = " + ")
 
             # Create the syntax line for this LV
             lv_defs <- c(lv_defs, paste(domain, "=~", rhs))
@@ -95,7 +95,7 @@ get_lavaan_syntax <- function(model,
 
     if(fix_lv_means){
         syntax_parts <- c(syntax_parts,
-                          "# --- Fixation of intercepts ---")
+                          "\n# --- Fixation of intercepts ---")
         for(domain in relevant_domains){
             syntax_parts <- c(syntax_parts,
                               paste0(domain, " ~ ", fixed_intercept, "*1"))
@@ -106,7 +106,7 @@ get_lavaan_syntax <- function(model,
 
     if(fix_lv_variances){
         syntax_parts <- c(syntax_parts,
-                          "# --- Fixation of variances ---")
+                          "\n# --- Fixation of variances ---")
         for(domain in relevant_domains){
             syntax_parts <- c(syntax_parts,
                               paste0(domain, " ~~ ", fixed_variance, "*", domain))
@@ -133,7 +133,7 @@ get_lavaan_syntax <- function(model,
                                group_var)
 
         syntax_parts <- c(syntax_parts,
-                          "# --- Group Variable Regression ---",
+                          "\n# --- Group Variable Regression ---",
                           main_effect,
                           direct_effect)
     }

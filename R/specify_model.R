@@ -23,7 +23,6 @@ specify_model <- function(cohorts,
 
     ## cohort_domain_map: domains present per cohort from domain_tests_map
     ## Preserve a preferred order where applicable
-    preferred_domain_order <- c("MEM", "EXEC", "SPEED", "MOT", "VERB")
     cohort_domain_map <- lapply(cohort_domain_test_map, function(dm) {
         doms <- names(dm)
         doms[order(match(doms, preferred_domain_order,
@@ -40,7 +39,7 @@ specify_model <- function(cohorts,
     }), domains)
 
     ## cohort_test_map by concatenating tests in preferred domain order
-    cohort_test_map <- lapply(domain_tests_map, function(dm) {
+    cohort_test_map <- lapply(cohort_domain_test_map, function(dm) {
         doms <- names(dm)
         doms <- doms[order(match(doms, preferred_domain_order,
                                  nomatch = length(preferred_domain_order) + 1))]
@@ -56,6 +55,7 @@ specify_model <- function(cohorts,
         domain_test_map = domain_test_map,
         cohort_domain_test_map = cohort_domain_test_map,
         data = data,
+        group_var = group_var,
         estimator = "MLR"
     )
 

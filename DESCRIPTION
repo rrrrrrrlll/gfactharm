@@ -15,7 +15,13 @@ License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 Imports: 
+    dplyr,
+    ggplot2,
     lavaan,
-    regsem
+    regsem,
+    tidyr
 URL: https://github.com/rrrrrrrlll/gfactharm
 BugReports: https://github.com/rrrrrrrlll/gfactharm/issues
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
