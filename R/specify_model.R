@@ -46,13 +46,16 @@ specify_model <- function(cohorts,
         unique(unlist(dm[doms], use.names = FALSE))
     })
 
+    items <- unique(unlist(domain_test_map))
+
     ## gather all the information into a list
     model_info <- list(
+        items   = items,
         cohorts = cohorts,
         domains = domains,
         cohort_domain_map = cohort_domain_map,
-        cohort_test_map = cohort_test_map,
-        domain_test_map = domain_test_map,
+        cohort_test_map   = cohort_test_map,
+        domain_test_map   = domain_test_map,
         cohort_domain_test_map = cohort_domain_test_map,
         data = data,
         group_var = group_var,
