@@ -17,3 +17,4 @@ dif_list_validate(sim_model, unidif, nonunidif)
 unidif_cohorts <- transform_dif_list(unidif)
 
 results <- harmonization(sim_model, unidif, nonunidif)
+

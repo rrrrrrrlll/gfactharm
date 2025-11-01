@@ -36,19 +36,24 @@ harmonization <- function(model,
         mean = c(),
         var = c()
     )
-    unidif_param <- data.frame(
-        item = c(),
-        dif_group = c(),
-        mean = c(),
-        var = c()
-    )
-    nonunidif_param <- data.frame(
-        item = c(),
-        dif_group = c(),
-        loading = c(),
-        mean = c(),
-        var = c()
-    )
+    unidif_param <- data.frame(matrix(ncol = 4,
+                                      nrow = 0,
+                                      dimnames = list(NULL, c("item", "dif_group", "mean", "var"))),
+                               stringsAsFactors = FALSE) %>%
+        dplyr::mutate(item = as.character(item),
+                      dif_group = as.integer(dif_group),
+                      mean = as.numeric(mean),
+                      var = as.numeric(var))
+
+    nonunidif_param <- data.frame(matrix(ncol = 5,
+                                         nrow = 0,
+                                         dimnames = list(NULL, c("item", "dif_group", "loading", "mean", "var"))),
+                                  stringsAsFactors = FALSE) %>%
+        dplyr::mutate(item = as.character(item),
+                      dif_group = as.integer(dif_group),
+                      loading = as.numeric(loading),
+                      mean = as.numeric(mean),
+                      var = as.numeric(var))
 
     # transform the DIF lists to cohort-centric lists
     unidif_cohorts <- transform_dif_list(unidif)
@@ -80,97 +85,9 @@ harmonization <- function(model,
 
     # --- 3. Harmonize Other Cohorts ---
 
-    for(index in 2:length(cohorts)){
-
-        cohort <- cohorts[index]
-
-        # 1. Separate items by DIF types
-        # note DIF items and their DIF group id are in dataframes
-        all_items <- c_t_map[[cohort]]
-        unidif_items <- unidif_cohorts[[cohort]]
-        nonunidif_items <- nonunidif_cohorts[[cohort]]
-        nodif_items <- setdiff(all_items,
-                               union(unidif_items$item, nonunidif_items$item))
-
-        # 2. For each part, get fixed and unfixed items
-        # no DIF
-        nodif_fix <- intersect(nodif_items, default_param$item)
-        nodif_free <- setdiff(nodif_items, nodif_fix)
-
-        # uniform DIF
-        unidif_fix <- dplyr::intersect(unidif_items,
-                                       unidif_param[, c('item', 'dif_group')])
-        unidif_free <- dplyr::setdiff(unidif_items, unidif_fix)
-
-        # nonuniform DIF
-        nonunidif_fix <- dplyr::intersect(nonunidif_items,
-                                          nonunidif_param[, c('item', 'dif_group')])
-        nonunidif_free <- dplyr::setdiff(nonunidif_items, nonunidif_fix)
-
-        # 3. Get values of fixed paramters
-        # no DIF
-        nodif_param <- default_param[default_param$item %in% nodif_fix, ]
-        ob_loadings <- setNames(nodif_param$loading, nodif_param$item)
-        ob_mean <- setNames(nodif_param$mean, nodif_param$item)
-        ob_var <- setNames(nodif_param$var, nodif_param$item)
-
-        # uniform DIF
-        unidif_param <- unidif_param %>%
-            dplyr::semi_join(unidif_fix, by = c('item' = 'item', 'dif_group' = 'dif_group'))
-        ob_loadings <- c(ob_loadings,
-                         setNames(unidif_param$loading, unidif_param$item))
-        ob_mean <- c(ob_mean,
-                     setNames(unidif_param$mean, unidif_param$item))
-        ob_var <- c(ob_var,
-                    setNames(unidif_param$var, unidif_param$item))
-
-        # nonuniform DIF
-        nonunidif_param <- nonunidif_param %>%
-            dplyr::semi_join(nonunidif_fix, by = c('item' = 'item', 'dif_group' = 'dif_group'))
-        ob_loadings <- c(ob_loadings,
-                         setNames(nonunidif_param$loading, nonunidif_param$item))
-        ob_mean <- c(ob_mean,
-                     setNames(nonunidif_param$mean, nonunidif_param$item))
-        ob_var <- c(ob_var,
-                    setNames(nonunidif_param$var, nonunidif_param$item))
-
-
-        # 4. Define syntax and fit
-        syntax <- lvn_syntax_g(model,
-                               selected_items = all_items,
-                               lv_loadings = lv_loadings,
-                               ob_loadings = ob_loadings,
-                               ob_mean     = ob_mean,
-                               ob_var      = ob_var)
-        fit <- lavaan::sem(model = syntax, data = data_list[[cohort]])
-        fit_results[[cohort]] <- fit
-
-        # 5. get the newly fixed parameter values
-        # no DIF
-        new_default_param <- get_est_param(lavaan::parameterEstimates(fit),
-                                           nodif_free)
-        default_param <- rbind(default_param, new_default_param)
-
-        # uniform DIF
-        new_uni_param <- get_est_param(lavaan::parameterEstimates(fit),
-                                       unidif_free$item)
-        new_uni_param_grouped <- dplyr::left_join(unidif_free, new_uni_param,
-                                                  by = 'item')
-        unidif_param <- rbind(unidif_param, new_uni_param_grouped)
-
-        # nonuniform DIF
-        new_nonuni_param <- get_est_param(lavaan::parameterEstimates(fit),
-                                          nonunidif_free$item)
-        new_nonuni_param_grouped <- dplyr::left_join(nonunidif_free, new_nonuni_param,
-                                                     by = 'item')
-        nonunidif_param <- rbind(nonunidif_param, new_nonuni_param_grouped)
-
-        cat(paste(index, 'in', length(cohorts), 'cohorts has been harmonized.\n'))
-    }
-
     # Define an empty df structure for a 0-row unidif/nonunidif item set
     empty_dif_df <- data.frame(item = character(),
-                               group_id = integer(),
+                               dif_group = integer(),
                                stringsAsFactors = FALSE)
 
     for(index in 2:length(cohorts)) {
@@ -178,7 +95,7 @@ harmonization <- function(model,
         cat(paste("\n--- Harmonizing Cohort:", cohort,
                   "(", index-1, "of", length(cohorts)-1, ") ---\n"))
 
-        # --- 1. Separate items by DIF types (SAFELY) ---
+        # 1. Separate items by DIF types
         all_items <- c_t_map[[cohort]]
 
         # Get DIF items, or an empty DF if NULL
@@ -187,38 +104,34 @@ harmonization <- function(model,
         } else {
             empty_dif_df
         }
-
         nonunidif_items <- if (!is.null(nonunidif_cohorts[[cohort]])) {
             nonunidif_cohorts[[cohort]]
         } else {
             empty_dif_df
         }
 
-        # Get item names *after* ensuring DFs are not NULL
+        # Get item names
         unidif_item_names <- unidif_items$item
         nonunidif_item_names <- nonunidif_items$item
-
         nodif_items <- setdiff(all_items, c(unidif_item_names, nonunidif_item_names))
 
         cat(paste("  Items (No DIF):", length(nodif_items), "\n"))
         cat(paste("  Items (Uni DIF):", length(unidif_item_names), "\n"))
         cat(paste("  Items (NonUni DIF):", length(nonunidif_item_names), "\n"))
 
-        # --- 2. For each part, get fixed and unfixed items (SAFELY) ---
+        # 2. For each part, get fixed and unfixed items
 
         # No DIF: Compare against 'default_param' item list
         nodif_fix <- intersect(nodif_items, default_param$item)
         nodif_free <- setdiff(nodif_items, nodif_fix)
 
         # Uniform DIF: Compare against 'unidif_param' (item + group_id)
-        # semi_join is a "filtering join" and is safe for 0-row inputs
-        unidif_fix <- dplyr::semi_join(unidif_items, unidif_param, by = c("item", "group_id"))
-        # anti_join is the opposite of semi_join (a "filtering setdiff")
-        unidif_free <- dplyr::anti_join(unidif_items, unidif_param, by = c("item", "group_id"))
+        unidif_fix <- dplyr::semi_join(unidif_items, unidif_param, by = c("item", "dif_group"))
+        unidif_free <- dplyr::anti_join(unidif_items, unidif_param, by = c("item", "dif_group"))
 
         # Nonuniform DIF: Compare against 'nonunidif_param' (item + group_id)
-        nonunidif_fix <- dplyr::semi_join(nonunidif_items, nonunidif_param, by = c("item", "group_id"))
-        nonunidif_free <- dplyr::anti_join(nonunidif_items, nonunidif_param, by = c("item", "group_id"))
+        nonunidif_fix <- dplyr::semi_join(nonunidif_items, nonunidif_param, by = c("item", "dif_group"))
+        nonunidif_free <- dplyr::anti_join(nonunidif_items, nonunidif_param, by = c("item", "dif_group"))
 
         cat(paste("  [No DIF] Fixed:", length(nodif_fix), "| Free:", length(nodif_free), "\n"))
         cat(paste("  [Uni DIF] Fixed:", nrow(unidif_fix), "| Free:", nrow(unidif_free), "\n"))
@@ -232,36 +145,40 @@ harmonization <- function(model,
         # Get 'No DIF' fixed params
         if (length(nodif_fix) > 0) {
             nodif_param_vals <- dplyr::filter(default_param, item %in% nodif_fix)
-            ob_loadings <- c(ob_loadings, setNames(nodif_param_vals$loading, nodif_param_vals$item))
-            ob_mean <- c(ob_mean, setNames(nodif_param_vals$mean, nodif_param_vals$item))
-            ob_var <- c(ob_var, setNames(nodif_param_vals$var, nodif_param_vals$item))
+            ob_loadings <- c(ob_loadings,
+                             setNames(nodif_param_vals$loading, nodif_param_vals$item))
+            ob_mean <- c(ob_mean,
+                         setNames(nodif_param_vals$mean, nodif_param_vals$item))
+            ob_var <- c(ob_var,
+                        setNames(nodif_param_vals$var, nodif_param_vals$item))
         }
 
         # Get 'Uniform DIF' fixed params
         if (nrow(unidif_fix) > 0) {
-            # Filter the global 'unidif_param' store for the ones we need
-            unidif_param_vals <- dplyr::semi_join(unidif_param, unidif_fix, by = c("item", "group_id"))
-            ob_loadings <- c(ob_loadings, setNames(unidif_param_vals$loading, unidif_param_vals$item))
-            ob_mean <- c(ob_mean, setNames(unidif_param_vals$mean, unidif_param_vals$item))
-            ob_var <- c(ob_var, setNames(unidif_param_vals$var, unidif_param_vals$item))
+            nodif_param_vals <- dplyr::filter(default_param, item %in% unidif_fix$item)
+            unidif_param_vals <- dplyr::semi_join(unidif_param, unidif_fix,
+                                                  by = c("item", "dif_group"))
+            ob_loadings <- c(ob_loadings,
+                             setNames(nodif_param_vals$loading, unidif_param_vals$item))
+            ob_mean <- c(ob_mean,
+                         setNames(unidif_param_vals$mean, unidif_param_vals$item))
+            ob_var <- c(ob_var,
+                        setNames(unidif_param_vals$var, unidif_param_vals$item))
         }
 
         # Get 'Nonuniform DIF' fixed params
         if (nrow(nonunidif_fix) > 0) {
-            nonunidif_param_vals <- dplyr::semi_join(nonunidif_param, nonunidif_fix, by = c("item", "group_id"))
-            ob_loadings <- c(ob_loadings, setNames(nonunidif_param_vals$loading, nonunidif_param_vals$item))
-            ob_mean <- c(ob_mean, setNames(nonunidif_param_vals$mean, nonunidif_param_vals$item))
-            ob_var <- c(ob_var, setNames(nonunidif_param_vals$var, nonunidif_param_vals$item))
+            nonunidif_param_vals <- dplyr::semi_join(nonunidif_param, nonunidif_fix,
+                                                     by = c("item", "dif_group"))
+            ob_loadings <- c(ob_loadings,
+                             setNames(nonunidif_param_vals$loading, nonunidif_param_vals$item))
+            ob_mean <- c(ob_mean,
+                         setNames(nonunidif_param_vals$mean, nonunidif_param_vals$item))
+            ob_var <- c(ob_var,
+                        setNames(nonunidif_param_vals$var, nonunidif_param_vals$item))
         }
 
-        # --- 4. Define syntax and fit ---
-
-        # Check if there are any items to fit at all
-        if (length(all_items) == 0) {
-            cat("  No items for this cohort. Skipping fit.\n")
-            fit_results[[cohort]] <- NULL
-            next # Skip to the next cohort
-        }
+        # 4. Define syntax and fit
 
         # Check if there is anything to estimate
         all_free_items <- c(nodif_free, unidif_free$item, nonunidif_free$item)
@@ -277,41 +194,30 @@ harmonization <- function(model,
                                ob_mean = ob_mean,
                                ob_var = ob_var)
 
-        # Mock the fit and parameter extraction
-        # We "fit" only the free items
-        cat(paste("  Fitting model for", length(all_free_items), "free items...\n"))
-        # In real code:
-        # fit <- lavaan::sem(model = syntax, data = data_list[[cohort]])
-        # fit_results[[cohort]] <- fit
-        # raw_estimates <- lavaan::parameterEstimates(fit)
-
-        # Using the mock function:
-        fit_results[[cohort]] <- "Mocked Fit Object"
-        mock_estimates <- mock_lavaan_fit(all_free_items)
+        fit <- lavaan::sem(model = syntax, data = data_list[[cohort]])
+        fit_results[[cohort]] <- fit
+        raw_estimates <- lavaan::parameterEstimates(fit)
 
 
-        # --- 5. Get and store the newly fixed parameter values (SAFELY) ---
+        # 5. Get and store the newly fixed parameter values
 
         # No DIF
         if (length(nodif_free) > 0) {
-            new_default_param <- get_est_param(mock_estimates, nodif_free)
-            # Add to the *global* default_param store
+            new_default_param <- get_est_param(raw_estimates, nodif_free)
             default_param <- rbind(default_param, new_default_param)
         }
 
         # Uniform DIF
         if (nrow(unidif_free) > 0) {
-            # Get params just by item name
-            new_uni_param <- get_est_param(mock_estimates, unidif_free$item)
-            # Add the 'group_id' column back in
+            new_uni_param <- get_est_param(raw_estimates, unidif_free$item)
             new_uni_param_grouped <- dplyr::left_join(unidif_free, new_uni_param, by = 'item')
-            # Add to the *global* unidif_param store
+            new_uni_param_grouped$loading <- NULL
             unidif_param <- rbind(unidif_param, new_uni_param_grouped)
         }
 
         # Nonuniform DIF
         if (nrow(nonunidif_free) > 0) {
-            new_nonuni_param <- get_est_param(mock_estimates, nonunidif_free$item)
+            new_nonuni_param <- get_est_param(raw_estimates, nonunidif_free$item)
             new_nonuni_param_grouped <- dplyr::left_join(nonunidif_free, new_nonuni_param, by = 'item')
             nonunidif_param <- rbind(nonunidif_param, new_nonuni_param_grouped)
         }
@@ -320,6 +226,7 @@ harmonization <- function(model,
     }
 
     # --- 6. Return all results ---
+    message('Harmonizarion Completed.')
     return(list(
         fit_results = fit_results,
         default_param = default_param,

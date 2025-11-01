@@ -43,5 +43,6 @@ transform_dif_list <- function(dif_list) {
         }
     }
 
-    return(cohort_centric_list)
+    final_df_list <- lapply(cohort_centric_list, as.data.frame, stringsAsFactors = FALSE)
+    return(final_df_list)
 }
