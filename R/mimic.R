@@ -23,7 +23,7 @@ mimic <- function(model, target_items, target_cohorts, anchors) {
     d_t_map <- model$domain_test_map
     c_t_map <- model$cohort_test_map
     group_var <- model$group_var
-    dat_tmp <- subset_from_data_list(model = model,
+    dat_tmp <- df_from_data_list(model = model,
                                       target_items = target_items,
                                       target_groups = target_cohorts)
 

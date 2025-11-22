@@ -36,14 +36,14 @@ df_from_data_list <- function(model, target_items, target_groups) {
     }
 
     # --- In Case of One Group ---
-    if (is.character(target_groups) || length(target_groups) == 1) {
+    if (is.character(target_groups) && length(target_groups) == 1) {
 
         if(is.list(target_groups)){
             group_name <- target_groups[1]
         } else{
             group_name <- target_groups
         }
-
+        print(group_name)
         missing_items_in_group <- setdiff(target_items, c_t_map[[group_name]])
 
         if (length(missing_items_in_group) > 0) {

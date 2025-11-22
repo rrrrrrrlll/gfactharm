@@ -35,3 +35,4 @@ lavaan::summary(fit)
 fit <- fit1st(sim_model,
               c('ya1_1', 'ya1_2', 'yb1_1', 'y2_1', 'y2_2', 'y2_3', 'y3_1', 'y3_2', 'y3_3'),
               c('A', 'BUNI'))
+
