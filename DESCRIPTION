@@ -18,10 +18,14 @@ Imports:
     dplyr,
     ggplot2,
     lavaan,
+    psych,
     regsem,
     tidyr
 URL: https://github.com/rrrrrrrlll/gfactharm
 BugReports: https://github.com/rrrrrrrlll/gfactharm/issues
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+VignetteBuilder: knitr
