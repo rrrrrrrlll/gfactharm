@@ -1,17 +1,20 @@
 Package: gfactharm
 Type: Package
-Title: What the Package Does (Title Case)
+Title: General Factor Data Harmonization
 Version: 0.1.0
 Authors@R: c(
     person(
-      "Jane", "Doe",
-      email = "jane@example.com",
+      "Ruoque", "Liu",
+      email = "rl107@jh.edu",
       role = c("aut", "cre")
     )
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
-License: What license is it under?
+Description: Implements a stepwise procedure for harmonizing psychometric data based on
+    assumption of a second order, general factor linear model. The package provides
+    tools for Exploratory Factor Analysis (EFA) to identify structure, Confirmatory
+    Factor Analysis (CFA) for validation, Differential Item Functioning (DIF) detection
+    to ensure measurement invariance, and data harmonization across multiple groups.
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports: 
