@@ -5,15 +5,15 @@ Version: 0.1.0
 Authors@R: c(
     person(
       "Ruoque", "Liu",
-      email = "rl107@jh.edu",
+      email = "liuruoquege@outlook.com",
       role = c("aut", "cre")
     )
   )
-Description: Implements a stepwise procedure for harmonizing psychometric data based on
-    assumption of a second order, general factor linear model. The package provides
-    tools for Exploratory Factor Analysis (EFA) to identify structure, Confirmatory
-    Factor Analysis (CFA) for validation, Differential Item Functioning (DIF) detection
-    to ensure measurement invariance, and data harmonization across multiple groups.
+Description: Implements a stepwise data harmonization procedure assuming a second-order
+    general factor. Features include Exploratory Factor Analysis (EFA) for structure
+    identification, Confirmatory Factor Analysis (CFA) for validation, Differential
+    Item Functioning (DIF) detection for measurement invariance, and multi-group data
+    harmonization.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -23,6 +23,7 @@ Imports:
     lavaan,
     psych,
     regsem,
+    tibble,
     tidyr
 URL: https://github.com/rrrrrrrlll/gfactharm
 BugReports: https://github.com/rrrrrrrlll/gfactharm/issues
@@ -32,3 +33,4 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
+RoxygenNote: 7.3.3

@@ -11,6 +11,7 @@
 #' @param target_cohorts A vector of names of targeted cohorts
 #'
 #' @return A table summarize prediction of DIF on targeted items
+#' @export
 
 
 lasso_restriction <- function(model, target_items, target_cohorts) {

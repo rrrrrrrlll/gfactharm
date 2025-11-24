@@ -12,6 +12,7 @@
 #' @param anchors a vector of names of anchor items
 #'
 #' @return A table summarize prediction of DIF on targeted items
+#' @export
 
 
 mimic <- function(model, target_items, target_cohorts, anchors) {

@@ -5,14 +5,14 @@ devtools::load_all()
 
 # multiple groups
 fit <- fit1st(sim_model,
-              c('y2_1', 'y2_2', 'y2_3', 'y3_1', 'y3_2', 'y3_3'),
-              c('A', 'BUNI'))
+              selected_items = c('y2_1', 'y2_2', 'y2_3', 'y3_1', 'y3_2', 'y3_3'),
+              selected_cohorts = c('A', 'BUNI'))
 lavaan::summary(fit$A)
 
 # one group
 fit <- fit1st(sim_model,
-              c('ya1_1', 'ya1_2', 'ya1_3', 'y2_1', 'y2_2', 'y2_3', 'y3_1', 'y3_2', 'y3_3'),
-              c('A'))
+              selected_items = c('ya1_1', 'ya1_2', 'ya1_3', 'y2_1', 'y2_2', 'y2_3', 'y3_1', 'y3_2', 'y3_3'),
+              selected_cohorts = c('A'))
 lavaan::summary(fit)
 
 
