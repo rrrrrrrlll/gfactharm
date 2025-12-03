@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r, setup}
 library(gfactharm)
+library(dplyr)
 ```
 
 ## Introduction
@@ -38,10 +39,10 @@ First, we examine the underlying structure of the raw data.
 
 ```{r, load data}
 # Load example data
-pathA -> system.file("extdata", "A.csv", package = "gfactharm")
-pathB1 -> system.file("extdata", "BNO.csv", package = "gfactharm")
-pathB2 -> system.file("extdata", "BUNI.csv", package = "gfactharm")
-pathB3 -> system.file("extdata", "BNONUNI.csv", package = "gfactharm")
+pathA <- system.file("extdata", "A.csv", package = "gfactharm")
+pathB1 <- system.file("extdata", "BNO.csv", package = "gfactharm")
+pathB2 <- system.file("extdata", "BUNI.csv", package = "gfactharm")
+pathB3 <- system.file("extdata", "BNONUNI.csv", package = "gfactharm")
 
 A <- read.csv(pathA)            # Simulated cohort A
 B <- read.csv(pathB1)           # Simulated cohort B, no DIF from A in any shared items
