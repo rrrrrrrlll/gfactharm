@@ -98,13 +98,6 @@ cfa_fit2 <- fit1st(sim_model,
               selected_cohorts = c('A', 'B'))
 lavaan::summary(cfa_fit2$A)
 
-# DIF detection
-dif_res3 <- dif_analysis(
-    model = sim_model,
-    target_items = c('y2_1', 'y2_2', 'y2_3', 'y3_1', 'y3_2', 'y3_3'),
-    target_cohorts = c('A', 'B')
-)
-
 # Harmonization
 final_res <- harmonization(sim_model)
 ```

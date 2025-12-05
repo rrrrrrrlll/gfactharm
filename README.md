@@ -28,8 +28,18 @@ You can install the development version of gfactharm from
 # install.packages("remotes") 
 remotes::install_github("rrrrrrrlll/gfactharm")
 #> Using GitHub PAT from the git credential store.
-#> Skipping install of 'gfactharm' from a github remote, the SHA1 (1a65a7f9) has not changed since last install.
-#>   Use `force = TRUE` to force installation
+#> Downloading GitHub repo rrrrrrrlll/gfactharm@HEAD
+#> ── R CMD build ─────────────────────────────────────────────────────────────────
+#>          checking for file 'C:\Users\ruoqu\AppData\Local\Temp\RtmpCc2niB\remotes3e83ad656f\rrrrrrrlll-gfactharm-7a2f22b/DESCRIPTION' ...  ✔  checking for file 'C:\Users\ruoqu\AppData\Local\Temp\RtmpCc2niB\remotes3e83ad656f\rrrrrrrlll-gfactharm-7a2f22b/DESCRIPTION'
+#>       ─  preparing 'gfactharm': (525ms)
+#>    checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+#>       ─  checking for LF line-endings in source and make files and shell scripts
+#>   ─  checking for empty or unneeded directories
+#>   ─  building 'gfactharm_0.1.0.tar.gz'
+#>      
+#> 
+#> 将程序包安装入'C:/Users/ruoqu/AppData/Local/R/win-library/4.4'
+#> (因为'lib'没有被指定)
 
 # Load the package
 library(gfactharm)
@@ -167,102 +177,24 @@ lavaan::summary(cfa_fit2$A)
 #>    .y3_2              2.048    0.082   24.978    0.000
 #>    .y3_3              3.129    0.161   19.373    0.000
 
-# DIF detection
-dif_res3 <- dif_analysis(
-    model = sim_model,
-    target_items = c('y2_1', 'y2_2', 'y2_3', 'y3_1', 'y3_2', 'y3_3'),
-    target_cohorts = c('A', 'B')
-)
+# Harmonization
+final_res <- harmonization(sim_model)
+#> All harmonization inputs are valid.
+#> 1 in 2 cohorts has been harmonized.
 #> 
-#> --- Running LASSO Restriction Test ---
-#> Successfully built dataframe with 6000 observations for 2 group(s) and 6 item(s).
-#> --- Fitting the following MIMIC model ---
-#> # --- Latent variable definitions ---
-#> f2 =~ NA*y2_1 + NA*y2_2 + NA*y2_3
-#> f3 =~ NA*y3_1 + NA*y3_2 + NA*y3_3
-#> 
-#> # --- Fixation of variances ---
-#> f2 ~~ 1*f2
-#> f3 ~~ 1*f3
-#> 
-#> # --- Group Variable Regression ---
-#> f2 + f3 ~ cohort
-#> y2_1 ~ dif1*cohort
-#> y2_2 ~ dif2*cohort
-#> y2_3 ~ dif3*cohort
-#> y3_1 ~ dif4*cohort
-#> y3_2 ~ dif5*cohort
-#> y3_3 ~ dif6*cohort
-#> -----------------------------------------
-#> 
-#> Running regularized SEM with LASSO penalty. This may take a moment...
+#> --- Harmonizing Cohort: B ( 1 of 1 ) ---
+#>   Items (No DIF): 9 
+#>   Items (Uni DIF): 0 
+#>   Items (NonUni DIF): 0 
+#>   [No DIF] Fixed: 6 | Free: 3 
+#>   [Uni DIF] Fixed: 0 | Free: 0 
+#>   [NonUni DIF] Fixed: 0 | Free: 0
 #> Warning: lavaan->lav_model_vcov():  
 #>    Could not compute standard errors! The information matrix could not be 
 #>    inverted. This may be a symptom that the model is not identified.
-#> Analysis complete.
-#> 
-#> --- LASSO DIF Detection Results ---
-#> $call
-#> regsem::regsem(model = initial_fit, type = "lasso", gradFun = "ram", 
-#>     pars_pen = dif_labels)
-#> 
-#> $estimates
-#>   f2 -> y2_1 f2 -> y2_2 f2 -> y2_3 f3 -> y3_1 f3 -> y3_2 f3 -> y3_3
-#> 1      0.978      1.917      2.928      0.939      1.911      2.845
-#>   cohort -> f2 cohort -> f3 cohort -> y2_1 cohort -> y2_2 cohort -> y2_3
-#> 1        0.658        0.836          0.039          0.107          0.137
-#>   cohort -> y3_1 cohort -> y3_2 cohort -> y3_3 y2_1 ~~ y2_1 y2_2 ~~ y2_2
-#> 1          0.061          0.133          0.172        1.017        2.055
-#>   y2_3 ~~ y2_3 y3_1 ~~ y3_1 y3_2 ~~ y3_2 y3_3 ~~ y3_3 f2 ~~ f3
-#> 1        2.893        0.989        2.067        2.987    0.613
-#> 
-#> $returnVals
-#>       convergence df          fit rmsea BIC
-#> rmsea           0  6 0.0004788804     0  NA
-#> 
-#> attr(,"class")
-#> [1] "summary.regsem"
-#>             label   est  lhs abs_est Classification
-#> 9  cohort -> y2_1 0.039 y2_1   0.039         No DIF
-#> 12 cohort -> y3_1 0.061 y3_1   0.061         No DIF
-#> 10 cohort -> y2_2 0.107 y2_2   0.107            DIF
-#> 13 cohort -> y3_2 0.133 y3_2   0.133            DIF
-#> 11 cohort -> y2_3 0.137 y2_3   0.137            DIF
-#> 14 cohort -> y3_3 0.172 y3_3   0.172            DIF
+#>   Cohort B harmonized.
+#> Harmonizarion Completed.
 ```
-
-<img src="man/figures/README-example-1.png" width="100%" />
-
-    #> Estimation of regression coefficent and classification of DIF:
-    #>     lhs   est abs_est Classification
-    #> 9  y2_1 0.039   0.039         No DIF
-    #> 12 y3_1 0.061   0.061         No DIF
-    #> 10 y2_2 0.107   0.107            DIF
-    #> 13 y3_2 0.133   0.133            DIF
-    #> 11 y2_3 0.137   0.137            DIF
-    #> 14 y3_3 0.172   0.172            DIF
-    #> Be aware that LASSO restriction test may be inaccurate when no DIF presents.
-    #> Run MIMIC test?
-    #> (y/n):
-    #> Stopping function.
-
-    # Harmonization
-    final_res <- harmonization(sim_model)
-    #> All harmonization inputs are valid.
-    #> 1 in 2 cohorts has been harmonized.
-    #> 
-    #> --- Harmonizing Cohort: B ( 1 of 1 ) ---
-    #>   Items (No DIF): 9 
-    #>   Items (Uni DIF): 0 
-    #>   Items (NonUni DIF): 0 
-    #>   [No DIF] Fixed: 6 | Free: 3 
-    #>   [Uni DIF] Fixed: 0 | Free: 0 
-    #>   [NonUni DIF] Fixed: 0 | Free: 0
-    #> Warning: lavaan->lav_model_vcov():  
-    #>    Could not compute standard errors! The information matrix could not be 
-    #>    inverted. This may be a symptom that the model is not identified.
-    #>   Cohort B harmonized.
-    #> Harmonizarion Completed.
 
 ## License
 
