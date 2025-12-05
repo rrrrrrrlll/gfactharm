@@ -1,0 +1,60 @@
+c(
+
+  bibentry(
+    bibtype = "Manual",
+    title = "gfactharm: Streamlined Pipeline for Longitudinal Data Harmonization",
+    author = person("Ruoque", "Liu"),
+    year = "2025",
+    note = "R package version 0.1.0",
+    url = "https://github.com/rrrrrrrlll/gfactharm"
+  ),
+
+  bibentry(
+    bibtype = "Article",
+    title = "Development of a refined harmonization approach for longitudinal cognitive data in people with HIV",
+    author = c(
+        person("Lang", "Lang"),
+        person("Leah H.", "Rubin"),
+        person("Raha M.", "Dastgheyb"),
+        person("David E.", "Vance"),
+        person("Scott L.", "Letendre"),
+        person("Donald R.", "Franklin"),
+        person("Yanxun", "Xu")
+    ),
+    journal = "Journal of Clinical Epidemiology",
+    volume = "178",
+    pages = "111620",
+    year = "2025",
+    doi = "10.1016/j.jclinepi.2024.111620"
+  ),
+
+bibentry(
+    bibtype = "Article",
+    title = "International application of an optimized harmonization approach for longitudinal cognitive data in people with HIV",
+    author = c(
+        person("Lang", "Lang"),
+        person("Leah H.", "Rubin"),
+        person("Beau M.", "Ances"),
+        person("Aggrey", "Anok"),
+        person("Sarah", "Cooley"),
+        person("Raha M.", "Dastgheyb"),
+        person("Rebecca E.", "Easter"),
+        person("Donald R.", "Franklin"),
+        person("Robert K.", "Heaton"),
+        person("Scott L.", "Letendre"),
+        person("Gertrude", "Nakijozi"),
+        person("Thomas", "Marcotte"),
+        person("Robert", "Paul"),
+        person("Eran F.", "Shorer"),
+        person("Stephan", "Tomusange"),
+        person("David E.", "Vance"),
+        person("Yanxun", "Xu")
+    ),
+    journal = "Journal of Clinical Epidemiology",
+    volume = "188",
+    pages = "111972",
+    year = "2025",
+    doi = "10.1016/j.jclinepi.2025.111972"
+  )
+
+)

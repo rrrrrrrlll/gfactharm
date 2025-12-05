@@ -13,7 +13,9 @@ Description: Implements a stepwise data harmonization procedure assuming a secon
     general factor. Features include Exploratory Factor Analysis (EFA) for structure
     identification, Confirmatory Factor Analysis (CFA) for validation, Differential
     Item Functioning (DIF) detection for measurement invariance, and multi-group data
-    harmonization.
+    harmonization. framework described in 
+    Lang et al. (2025) <doi:10.1016/j.jclinepi.2024.111620>
+    
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
