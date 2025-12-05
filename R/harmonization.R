@@ -225,10 +225,33 @@ harmonization <- function(model,
         cat(paste("  Cohort", cohort, "harmonized.\n"))
     }
 
-    # --- 6. Return all results ---
+    # --- 6. Get Factor Scores ---
+
+    factor_scores <- lapply(fit_results, function(fit_obj) {
+        fs <- lavaan::lavPredict(fit_obj)
+        return(as.data.frame(fs))
+    })
+
+    names(factor_scores) <- names(fit_results)
+
+    scores_list <- lapply(names(fit_results), function(grp_name) {
+        fs <- lavaan::lavPredict(final_res$fit_results[[grp_name]])
+        df <- as.data.frame(fs)
+        df$cohort <- grp_name
+        return(df)
+    })
+
+    # Combine into one df
+    factor_scores <- do.call(rbind, scores_list)
+
+
+
+    # --- 7. Return all results ---
+
     message('Harmonizarion Completed.')
     return(list(
         fit_results = fit_results,
+        factor_scores = factor_scores,
         default_param = default_param,
         unidif_param = unidif_param,
         nonunidif_param = nonunidif_param

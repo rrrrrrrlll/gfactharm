@@ -42,13 +42,13 @@ The package implements a step-wise framework:
 
 ## Example with Simulated Data
 
-We use four simulated datasets for demonstration. `A`, `B` are two datasets generated through similar second-order model, with same mean, variance and loadings for each shared items. They each include distinct cohort `f1a` and `f1b` respectively, and share two cohort `f2` and `f3`.
+We use four simulated datasets for demonstration. `A`, `B` are two datasets generated through similar second-order model, with same mean, variance and loadings for each shared items. They each three cohort `f1`, `f2` and `f3`, the first measured by distinct items, the latter two measured by same items.
 
 ```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap="example simulation"}
 knitr::include_graphics("images/simulation_graph.png")
 ```
 
-In addition, `BUNI` and `BNONUNI` are adaptations of `B` by adding uniform/nonuniform DIF onto each items in `f3`.
+In addition, `BUNI` and `BNONUNI` are adaptations of `B` by adding uniform/nonuniform DIF onto each item in `f3`.
 
 ## Step 1: EFA
 

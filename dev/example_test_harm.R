@@ -18,3 +18,5 @@ unidif_cohorts <- transform_dif_list(unidif)
 
 results <- harmonization(sim_model, unidif, nonunidif)
 
+results$factor_scores
+
