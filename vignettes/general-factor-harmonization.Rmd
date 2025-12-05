@@ -17,6 +17,13 @@ knitr::opts_chunk$set(
 ```{r, setup}
 library(gfactharm)
 library(dplyr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,       # Controls the internal canvas width
+  fig.height = 5,      # Controls the internal canvas height
+  out.width = "100%"   # Controls the display width in HTML
+)
 ```
 
 ## Introduction
@@ -119,7 +126,8 @@ sim_model <- specify_model(cohorts                = cohorts,
                            group_var              = 'cohort')
 
 # Check the object
-print(sim_model)
+print(sim_model$cohort_domain_map)
+print(sim_model$domain_test_map)
 ```
 
 ## Step 3: Validation
