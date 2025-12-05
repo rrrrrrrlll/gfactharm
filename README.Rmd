@@ -1,0 +1,123 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# gfactharm: A Stepwise Data Harmonization Framework
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+gfactharm implements the refined harmonization framework for longitudinal cognitive data developed by Lang et al. (2024).
+
+The goal of gfactharm is to implements a step-wise data harmonization procedure assuming a second-order general factor. Features include Exploratory Factor Analysis (EFA) for structure identification, Confirmatory Factor Analysis (CFA) for validation, Differential Item Functioning (DIF) detection for measurement invariance, and multi-group data Harmonization.
+
+## Installation
+
+You can install the development version of gfactharm from [GitHub](https://github.com/) with:
+
+``` {r install}
+# Install the development version from GitHub:
+# You may need to install remotes first if you don't have it
+# install.packages("remotes") 
+remotes::install_github("rrrrrrrlll/gfactharm")
+
+# Load the package
+library(gfactharm)
+```
+
+## Example
+
+This is a basic example of creating `harm_model` S3 object and run part of harmonization pipeline. For the full pipeline, please knit the vignette under the vignette folder for an example use of the main functions in the package.
+
+
+```{r example}
+library(gfactharm)
+library(dplyr)
+
+# load example data
+pathA <- system.file("extdata", "A.csv", package = "gfactharm")
+pathB <- system.file("extdata", "BNO.csv", package = "gfactharm")
+A <- read.csv(pathA)
+B <- read.csv(pathB)
+
+# Define model structure
+cohorts <- c("A", "B")
+
+domain_order <- c('fa1', 'fa2', 'f2', 'f3')
+
+c_d_t_map <- list(  # Specify factor relations
+    A = list(
+        f1 = c("ya1_1", "ya1_2", "ya1_3"),
+        f2 = c("y2_1", "y2_2", "y2_3"),
+        f3 = c("y3_1", "y3_2", "y3_3")
+    ),
+    B = list(
+        f1 = c("yb1_1", "yb1_2", "yb1_3"),
+        f2 = c("y2_1", "y2_2", "y2_3"),
+        f3 = c("y3_1", "y3_2", "y3_3")
+    ),
+    BUNI = list(
+        f1 = c("yb1_1", "yb1_2", "yb1_3"),
+        f2 = c("y2_1", "y2_2", "y2_3"),
+        f3 = c("y3_1", "y3_2", "y3_3")
+    ),
+    BNONUNI = list(
+        f1 = c("yb1_1", "yb1_2", "yb1_3"),
+        f2 = c("y2_1", "y2_2", "y2_3"),
+        f3 = c("y3_1", "y3_2", "y3_3")
+    )
+)
+
+# Integrate data into a list
+data_list <- list(A = A, B = B)
+
+# Create master object
+sim_model <- specify_model(cohorts                = cohorts,
+                           cohort_domain_test_map = c_d_t_map,
+                           covariate_lst          = NULL,
+                           preferred_domain_order = domain_order,
+                           data                   = data_list,
+                           group_var              = 'cohort')
+
+
+# cfa
+cfa_fit2 <- fit1st(sim_model,
+              selected_items = c('y2_1', 'y2_2', 'y2_3',
+                                 'y3_1', 'y3_2', 'y3_3'),
+              selected_cohorts = c('A', 'B'))
+lavaan::summary(cfa_fit2$A)
+
+# DIF detection
+dif_res3 <- dif_analysis(
+    model = sim_model,
+    target_items = c('y2_1', 'y2_2', 'y2_3', 'y3_1', 'y3_2', 'y3_3'),
+    target_cohorts = c('A', 'B')
+)
+
+# Harmonization
+final_res <- harmonization(sim_model)
+```
+
+## License
+
+This package is licensed under the GPL-3 license.
+
+## References
+
+1. Lang, L., et al. (2024). Development of a refined harmonization approach for longitudinal cognitive data in people with HIV. *Journal of Clinical Epidemiology*, 178, 111620.[doi:10.1016/j.jclinepi.2024.111620](https://doi.org/10.1016/j.jclinepi.2024.111620)
+2. Lang, L., et al. (2025). International application of an optimized harmonization approach for longitudinal cognitive data in people with HIV. *Journal of Clinical Epidemiology*, 188, 111972. [doi:10.1016/j.jclinepi.2025.111972](https://doi.org/10.1016/j.jclinepi.2025.111972)
+
+
+
+
