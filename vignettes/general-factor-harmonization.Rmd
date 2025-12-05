@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Introduction
+# Introduction
 
 `gfactharm` provides a streamlined pipeline for psychometric analysis, moving from exploratory structure detection to cross-study data harmonization. This package is based assumption of second-order linear model with a single general factor. This package is designed to help researchers ensure that latent constructs are measured consistently across different populations before pooling data.
 
@@ -39,6 +39,16 @@ The package implements a step-wise framework:
 3. Validation: assess model fit(CFA) and detect Differential Item Functioning(DIF) across groups.
 
 4. Harmonization: Adjust scores to make them comparable.
+
+## Example with Simulated Data
+
+We use four simulated datasets for demonstration. `A`, `B` are two datasets generated through similar second-order model, with same mean, variance and loadings for each shared items. They each include distinct cohort `f1a` and `f1b` respectively, and share two cohort `f2` and `f3`.
+
+```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap="example simulation"}
+knitr::include_graphics("images/simulation_graph.png")
+```
+
+In addition, `BUNI` and `BNONUNI` are adaptations of `B` by adding uniform/nonuniform DIF onto each items in `f3`.
 
 ## Step 1: EFA
 
@@ -230,8 +240,32 @@ nonunidif <- list(
 )
 
 final_res <- harmonization(sim_model, unidif, nonunidif)
+print(head(final_res))
+```
 
-head(final_res)
+``` {r, factor score}
+# get score list
+scores_list <- lapply(names(final_res$fit_results), function(grp_name) {
+    fs <- lavaan::lavPredict(final_res$fit_results[[grp_name]])
+    df <- as.data.frame(fs)
+    df$cohort <- grp_name
+    return(df)
+})
+  
+# Combine into one df
+all_scores <- do.call(rbind, scores_list)
+
+# plot density of factor scores for each cohort
+library(ggplot2)
+plot_cols <- setdiff(names(all_scores), "cohort")
+for (col in plot_cols) {
+  p <- ggplot(all_scores, aes(x = .data[[col]], fill = as.factor(cohort))) +
+    geom_density(alpha = 0.5) +
+    labs(title = paste("Density plot of", col), x = col) +
+    theme_minimal()
+  
+  print(p)
+}
 ```
 
 Note that user can state DIF groups by concatenate cohort names. For example, given two extra cohorts: `C` and `D`, the code below states that for item `y3_1`, there is no uniform DIF between `BUNI` and `C`, but they is DIF from them to `D`.
