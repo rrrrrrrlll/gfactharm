@@ -94,7 +94,7 @@ Note that model syntax is not needed in creating `harm_model`, as a suitable syn
 # Define model structure based on efa result
 cohorts <- c("A", "B", "BUNI", "BNONUNI")
 
-domain_order <- c('fa1', 'fa2', 'f2')
+domain_order <- c('f1', 'f2')
 
 c_d_t_map <- list(
     A = list(
@@ -240,7 +240,7 @@ nonunidif <- list(
 )
 
 final_res <- harmonization(sim_model, unidif, nonunidif)
-print(head(final_res))
+print(final_res$fit_results)
 ```
 
 ``` {r, factor score}
@@ -253,13 +253,14 @@ scores_list <- lapply(names(final_res$fit_results), function(grp_name) {
 })
   
 # Combine into one df
-all_scores <- do.call(rbind, scores_list)
+all_scores <- final_res$factor_scores
 
 # plot density of factor scores for each cohort
 library(ggplot2)
 plot_cols <- setdiff(names(all_scores), "cohort")
+
 for (col in plot_cols) {
-  p <- ggplot(all_scores, aes(x = .data[[col]], fill = as.factor(cohort))) +
+  p <- ggplot(all_scores, aes(x = .data[[col]], fill = cohort)) +
     geom_density(alpha = 0.5) +
     labs(title = paste("Density plot of", col), x = col) +
     theme_minimal()
@@ -277,3 +278,4 @@ unidif <- list(
     y3_3 = list('BUNI')
 )
 ```
+

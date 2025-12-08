@@ -137,7 +137,7 @@ harmonization <- function(model,
         cat(paste("  [Uni DIF] Fixed:", nrow(unidif_fix), "| Free:", nrow(unidif_free), "\n"))
         cat(paste("  [NonUni DIF] Fixed:", nrow(nonunidif_fix), "| Free:", nrow(nonunidif_free), "\n"))
 
-        # --- 3. Get values of fixed parameters (SAFELY) ---
+        # 3. Get values of fixed parameters
         ob_loadings <- c()
         ob_mean <- c()
         ob_var <- c()
@@ -192,8 +192,12 @@ harmonization <- function(model,
                                selected_items = all_items,
                                ob_loadings = ob_loadings,
                                ob_mean = ob_mean,
-                               ob_var = ob_var)
+                               ob_var = ob_var,
+                               lv_loadings = lv_loadings)
 
+        cat("\n--- Fitting the following model ---\n\n")
+        cat(syntax)
+        cat("\n-----------------------------------\n\n")
         fit <- lavaan::sem(model = syntax, data = data_list[[cohort]])
         fit_results[[cohort]] <- fit
         raw_estimates <- lavaan::parameterEstimates(fit)
@@ -227,24 +231,15 @@ harmonization <- function(model,
 
     # --- 6. Get Factor Scores ---
 
-    factor_scores <- lapply(fit_results, function(fit_obj) {
-        fs <- lavaan::lavPredict(fit_obj)
-        return(as.data.frame(fs))
-    })
-
-    names(factor_scores) <- names(fit_results)
-
     scores_list <- lapply(names(fit_results), function(grp_name) {
-        fs <- lavaan::lavPredict(final_res$fit_results[[grp_name]])
+        fs <- lavaan::lavPredict(fit_results[[grp_name]])
         df <- as.data.frame(fs)
         df$cohort <- grp_name
         return(df)
     })
 
     # Combine into one df
-    factor_scores <- do.call(rbind, scores_list)
-
-
+    factor_scores <- dplyr::bind_rows(scores_list)
 
     # --- 7. Return all results ---
 

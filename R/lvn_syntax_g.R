@@ -183,7 +183,11 @@ lvn_syntax_g <- function(model,
             syntax_parts,
             constraint_strings
         )
-
+    }else{
+        syntax_parts <- c(syntax_parts,
+                          "# --- General Variable Identification ---",
+                          paste(gf, "~ NA*1"),
+                          paste(gf, "~~ NA*G"))
     }
 
 

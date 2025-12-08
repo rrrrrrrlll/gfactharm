@@ -1,4 +1,5 @@
 devtools::load_all()
+devtools::install()
 
 unidif <- list(
     y3_1 = list('BUNI'),
@@ -18,5 +19,5 @@ unidif_cohorts <- transform_dif_list(unidif)
 
 results <- harmonization(sim_model, unidif, nonunidif)
 
-results$factor_scores
+results$default_param
 
