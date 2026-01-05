@@ -14,9 +14,9 @@
 #' @export
 #'
 
-harmonization <- function(model,
-                          unidif = NULL,
-                          nonunidif = NULL){
+harm <- function(model,
+                 unidif = NULL,
+                 nonunidif = NULL){
 
 
     # --- 0. Validate 'model' ---

@@ -21,6 +21,26 @@ specify_model <- function(cohorts,
                           data,
                           group_var = 'cohort') {
 
+    # --- 1. Input Validation (Crucial for Package Robustness) ---
+
+    if (!is.list(data) || is.null(names(data))) {
+        stop("Argument 'data' must be a named list of data frames.")
+    }
+
+    # Check if all cohorts in the map exist in the data
+    missing_data <- setdiff(cohorts, names(data))
+    if (length(missing_data) > 0) {
+        stop(paste("The following cohorts are defined but missing from 'data':",
+                   paste(missing_data, collapse = ", ")))
+    }
+
+    # Check if map structure is valid
+    if (!all(cohorts %in% names(cohort_domain_test_map))) {
+        stop("All cohorts must be present in 'cohort_domain_test_map'.")
+    }
+
+    # --- 2. logic to Organize Structure (Refined User Code) ---
+
     ## cohort_domain_map: domains present per cohort from domain_tests_map
     ## Preserve a preferred order where applicable
     cohort_domain_map <- lapply(cohort_domain_test_map, function(dm) {
@@ -47,6 +67,8 @@ specify_model <- function(cohorts,
     })
 
     items <- unique(unlist(domain_test_map))
+
+    # --- 3. Construct Object ---
 
     ## gather all the information into a list
     model_info <- list(

@@ -239,8 +239,9 @@ nonunidif <- list(
     y3_3 = list('BNONUNI')
 )
 
-final_res <- harmonization(sim_model, unidif, nonunidif)
+final_res <- harm(sim_model, unidif, nonunidif)
 print(final_res$fit_results)
+print(lavaan::summary(final_res$fit_results$B))
 ```
 
 ``` {r, factor score}
