@@ -57,6 +57,9 @@ run_efa <- function(data, nfactors = NULL, rotate = "oblimin", fm = "ml", show_p
         fm = fm
     )
 
+    par(xpd = TRUE)
+    psych::fa.diagram(fit, marg = c(0.5, 2, 1, 0.5))
+
     # 4. Clean up Loadings for easier reading
     # Unclass converts the specialized matrix to a standard one
     loadings_df <- as.data.frame(unclass(fit$loadings))

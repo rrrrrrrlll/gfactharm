@@ -15,15 +15,15 @@ pred.harm <- function(harm_fit, data, cohorts = NULL){
 
     # --- 1. Validate input ---
 
+    if(!inherits(harm_fit, "harm_fit")) {
+        stop("Input must be a 'harm_fit' object.")
+    }
+
     model <- harm_fit$model
     new.cohorts <- setdiff(names(data), model$cohorts)
 
     if(length(new.cohorts) > 0){
         stop("Cohort(s)", new.cohorts, "are not in 'harm_fit'.")
-    }
-
-    if(!inherits(model, "harm_fit")) {
-        stop("Input must be a 'harm_fit' object.")
     }
 
     # If user passes a single data.frame
@@ -46,7 +46,7 @@ pred.harm <- function(harm_fit, data, cohorts = NULL){
 
     # Handle unnamed lists
     if (is.null(names(data))) {
-        cohorts <- names(data)
+        names(data) <- cohorts
         if(!is.null(cohorts)){
             names(data) <- cohorts
         } else{
@@ -65,7 +65,7 @@ pred.harm <- function(harm_fit, data, cohorts = NULL){
 
     # Check coverage for each known cohort/dataset provided
     lapply(cohorts, function(cohort_name) {
-        df <- new_data[[cohort_name]]
+        df <- data[[cohort_name]]
         correct_items <- model$cohort_test_map[[cohort_name]]
 
         if (!all.equal(colnames(df), correct_items)) {
@@ -86,7 +86,7 @@ pred.harm <- function(harm_fit, data, cohorts = NULL){
 
     # --- 3. Prediction ---
 
-    scores <- lapply(known.cohorts, function(cohort_name) {
+    scores <- lapply(cohorts, function(cohort_name) {
         df <- data[[cohort_name]]
         fs <- lavaan::lavPredict(harm_fit$fit_results[[cohort_name]],
                                  newdata = df)

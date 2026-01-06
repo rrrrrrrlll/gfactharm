@@ -1,4 +1,5 @@
 devtools::load_all()
+devtools::install()
 
 cohorts <- c("A", "BNO", "BUNI", "BNONUNI")
 
@@ -46,3 +47,5 @@ sim_model <- specify_model(cohorts                = cohorts,
                            data                   = data_list,
                            group_var              = 'cohort')
 
+efa_res <- run_efa(A, nfactors = NULL, show_plot = TRUE)
+summary(efa_res$fit)

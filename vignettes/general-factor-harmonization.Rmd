@@ -280,3 +280,30 @@ unidif <- list(
 )
 ```
 
+The package allows prediction of new data based on harmonized result.
+
+```{r predict}
+test_data <- list(
+    A[2500:3000, ],
+    B[2500:3000, ],
+    BUNI[2500:3000, ]
+)
+test_cohorts <- list("A", "B", "BUNI")
+
+test_scores <- pred.harm(final_res, data = test_data, cohorts = test_cohorts)
+
+combined_df <- bind_rows(test_scores, .id = "Cohort")
+cols_to_plot <- setdiff(names(combined_df), "Cohort")
+
+# 2. Loop through each column name
+for (col in cols_to_plot) {
+  
+  p <- ggplot(combined_df, aes(x = .data[[col]], fill = Cohort)) +
+    geom_density(alpha = 0.5) +
+    theme_minimal() +
+    labs(title = paste("Density Distribution:", col), x = col)
+  
+  print(p)
+}
+
+```
