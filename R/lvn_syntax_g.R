@@ -22,7 +22,7 @@
 #'  If `NULL` (default), all loadings are freely estimated.
 #'
 #' @param std_g Logical.
-#'  If `TRUE`, general factor intercept and variance, and esidual variance of latent
+#'  If `TRUE`, general factor intercept and variance, and residual variance of latent
 #'  variables will be standardized.
 #'  If `FALSE` (default), these parameters are freely estimated.
 #' @param gf A string representing the general factor's name. Default to `G`.
@@ -114,7 +114,7 @@ lvn_syntax_g <- function(model,
     if (!is.null(ob_mean)) {
         for (item in selected_items) {
             if (item %in% names(ob_mean)) {
-                mean_line <- paste(item, "~", ob_mean[item], "*1")
+                mean_line <- paste0(item, " ~ ", ob_mean[item], "*1")
                 mean_lines <- c(mean_lines, mean_line)
             }
         }
@@ -135,7 +135,7 @@ lvn_syntax_g <- function(model,
     if (!is.null(ob_var)) {
         for (item in selected_items) {
             if (item %in% names(ob_var)) {
-                var_line <- paste(item, "~~", ob_var[item], "*", item)
+                var_line <- paste0(item, " ~~ ", ob_var[item], "*", item)
                 var_lines <- c(var_lines, var_line)
             }
         }

@@ -10,7 +10,7 @@
 #' @param nonunidif A named list specifying the cohorts that each items is believed
 #' to have nonuniform DIF. Default to be `NULL`.
 #'
-#' @return A named of of fit results and the vector of all parameter values.
+#' @return A S3 object `harm_fit` of fit results, parameter values and factor scores.
 #' @export
 #'
 
@@ -244,11 +244,15 @@ harm <- function(model,
     # --- 7. Return all results ---
 
     message('Harmonizarion Completed.')
-    return(list(
+    results <- list(
+        model = model,
         fit_results = fit_results,
         factor_scores = factor_scores,
         default_param = default_param,
         unidif_param = unidif_param,
         nonunidif_param = nonunidif_param
-    ))
+    )
+
+    class(results) <- c("harm_fit", "list")
+    return(results)
 }
